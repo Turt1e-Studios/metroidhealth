@@ -1,55 +1,52 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] private float speed;
-    [SerializeField] private float jumpSpeed;
-    private Vector2 _velocity;
-    private Rigidbody2D _rigidbody2D;
-    private bool _isGrounded;
+    [SerializeField] private float speed = 10f;
+    [SerializeField] private float jumpingPower = 50f;
     
-    // Start is called before the first frame update
-    void Start()
-    {
-        _rigidbody2D = GetComponent<Rigidbody2D>();
-    }
+    private float _horizontal;
+    private bool _isFacingRight = true;
 
-    // Update is called once per frame
+    [SerializeField] private Rigidbody2D rb;
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private LayerMask groundLayer;
+
     void Update()
     {
-        Vector2 input = new Vector2(Input.GetAxisRaw("Horizontal"),0);
-        _velocity = input.normalized;
-        transform.Translate(_velocity * (Time.deltaTime * speed));
-        
-        // Check for jumps on the ground or in the air
-        if (Input.GetKeyDown(KeyCode.W) && _isGrounded)
+        _horizontal = Input.GetAxisRaw("Horizontal");
+
+        if (Input.GetButtonDown("Jump") && IsGrounded())
         {
-            _rigidbody2D.AddForce(Vector2.up * jumpSpeed, ForceMode2D.Impulse);
+            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
         }
-    }
-    
-    // Reset variables after hitting the ground again
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag(("Object")))
+
+        if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
         {
-            _isGrounded = true;
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
         }
+
+        Flip();
     }
- 
-    // Player leaves the ground
-    void OnCollisionExit2D(Collision2D collision)
+
+    private void FixedUpdate()
     {
-        if (collision.gameObject.CompareTag(("Object")))
+        rb.velocity = new Vector2(_horizontal * speed, rb.velocity.y);
+    }
+
+    private bool IsGrounded()
+    {
+        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+    }
+
+    private void Flip()
+    {
+        if (_isFacingRight && _horizontal < 0f || !_isFacingRight && _horizontal > 0f)
         {
-            _isGrounded = false;
+            _isFacingRight = !_isFacingRight;
+            Vector3 localScale = transform.localScale;
+            localScale.x *= -1f;
+            transform.localScale = localScale;
         }
-    }
-    
-    bool IsGrounded()
-    {
-        return GetComponent<Rigidbody>().velocity.y == 0;
     }
 }
