@@ -306,4 +306,9 @@ public class PlayerMovement : MonoBehaviour
     {
         _isWallJumping = false;
     }
+
+    public void MultiplyVelocity(float multiplier)
+    {
+        rb.velocity *= multiplier;
+    }
 }
