@@ -4,21 +4,29 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float speed = 10f;
     [SerializeField] private float jumpingPower = 50f;
-    
-    private float _horizontal;
-    private bool _isFacingRight = true;
-
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
+
+    public bool canDoubleJump;
+
+    private float _horizontal;
+    private bool _isFacingRight = true;
+    private bool _hasJumped;
 
     void Update()
     {
         _horizontal = Input.GetAxisRaw("Horizontal");
 
-        if (Input.GetButtonDown("Jump") && IsGrounded())
+        if (IsGrounded())
+        {
+            _hasJumped = false;
+        }
+
+        if (Input.GetButtonDown("Jump") && (IsGrounded() || (canDoubleJump && !_hasJumped)))
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
+            _hasJumped = true;
         }
 
         if (Input.GetButtonUp("Jump") && rb.velocity.y > 0f)
