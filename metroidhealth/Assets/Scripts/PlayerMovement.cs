@@ -122,11 +122,11 @@ public class PlayerMovement : MonoBehaviour
     
     private void WallSlide()
     {
-        print(IsWalled());
         if (IsWalled() && !IsGrounded() && _horizontal != 0f)
         {
+            print(IsWalled());
             _isWallSliding = true;
-            rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.y, -wallSlidingSpeed, float.MaxValue));
+            rb.velocity = new Vector2(rb.velocity.x, -wallSlidingSpeed);
         }
         else
         {
@@ -149,10 +149,10 @@ public class PlayerMovement : MonoBehaviour
             _wallJumpingCounter -= Time.deltaTime;
         }
 
-        if (Input.GetButtonDown("Jump") && _wallJumpingCounter > 0f)
+        if (Input.GetKeyDown(KeyCode.W) && _wallJumpingCounter > 0f)
         {
             _isWallJumping = true;
-            rb.velocity = new Vector2(_wallJumpingDirection * wallJumpingPower.x, wallJumpingPower.y);
+            rb.velocity += new Vector2(_wallJumpingDirection * wallJumpingPower.x, wallJumpingPower.y);
             _wallJumpingCounter = 0f;
 
             if (transform.localScale.x != _wallJumpingDirection)
