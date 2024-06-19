@@ -30,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private TrailRenderer tr;
     [SerializeField] private Transform wallCheck;
+    [SerializeField] private Transform wallCheck2;
     [SerializeField] private LayerMask wallLayer;
 
     private float _horizontal;
@@ -52,6 +53,8 @@ public class PlayerMovement : MonoBehaviour
     private bool _isSuperDashing;
     private float _originalGravity;
     private bool _hasLeftWall;
+    private bool _hasChargingLeftWall;
+    private bool _isCharging;
 
     private void Start()
     {
@@ -60,7 +63,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (IsWalled() && _isSuperDashing && _hasLeftWall)
+        if (IsDoubleWalled() && _isSuperDashing && _hasLeftWall)
         {
             ResetSuperDash();
         }
@@ -69,7 +72,12 @@ public class PlayerMovement : MonoBehaviour
         {
             _hasLeftWall = true;
         }
-        
+
+        if (!IsWalled() && _isCharging)
+        {
+            _hasChargingLeftWall = true;
+        }
+
         if (_isDashing || _isSuperDashing)
         {
             return;
@@ -164,6 +172,11 @@ public class PlayerMovement : MonoBehaviour
         return Physics2D.OverlapCircle(wallCheck.position, 0.2f, wallLayer);
     }
 
+    private bool IsDoubleWalled()
+    {
+        return Physics2D.OverlapCircle(wallCheck.position, 0.2f, wallLayer) || Physics2D.OverlapCircle(wallCheck2.position, 0.2f, wallLayer);
+    }
+
     private void Flip()
     {
         if (_isFacingRight && _horizontal < 0f || !_isFacingRight && _horizontal > 0f)
@@ -195,17 +208,19 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator SuperDash()
     {
+        _isCharging = true;
+        _hasChargingLeftWall = false;
+        rb.constraints = RigidbodyConstraints2D.FreezeAll;
         yield return new WaitForSeconds(superDashStartup);
-        if (!IsGrounded())
-        {
-            _canDash = false;
-            _isSuperDashing = true;
-            print("is super dashing");
-            print(_originalGravity);
-            rb.gravityScale = 0f;
-            rb.velocity = new Vector2(transform.localScale.x * superDashPower * -1, 0f);
-            rb.constraints = RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
-        }
+        // if (!IsGrounded() && IsWalled() && !_hasChargingLeftWall)
+        _isCharging = false;
+        _canDash = false;
+        _isSuperDashing = true;
+        print("is super dashing");
+        print(_originalGravity);
+        rb.gravityScale = 0f;
+        rb.velocity = new Vector2(transform.localScale.x * superDashPower * -1, 0f);
+        rb.constraints = RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
     }
 
     private void OnCollisionEnter2D(Collision2D col)
