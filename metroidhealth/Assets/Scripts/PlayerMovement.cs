@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -24,6 +22,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float jumpCooldown = 0.4f;
     [SerializeField] private float superDashPower = 40f;
     [SerializeField] private float superDashStartup = 1f;
+    [SerializeField] private float downDashPower = 50f;
     [SerializeField] private Vector2 wallJumpingPower = new Vector2(8f, 16f);
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
@@ -55,6 +54,8 @@ public class PlayerMovement : MonoBehaviour
     private float _originalGravity;
     private bool _hasLeftWall;
 
+    private bool _isDownDashing;
+
     private void Start()
     {
         _originalGravity = rb.gravityScale;
@@ -62,7 +63,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (IsDoubleWalled() && _isSuperDashing && _hasLeftWall)
+        if ((IsDoubleWalled() && _isSuperDashing && _hasLeftWall) || (IsGrounded() && _isDownDashing))
         {
             ResetSuperDash();
         }
@@ -72,7 +73,7 @@ public class PlayerMovement : MonoBehaviour
             _hasLeftWall = true;
         }
 
-        if (_isDashing || _isSuperDashing)
+        if (_isDashing || _isSuperDashing || _isDownDashing)
         {
             return;
         }
@@ -118,7 +119,11 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            if (_isWallSliding && canSuperDash)
+            if (Input.GetKey(KeyCode.S))
+            {
+                DownDash();
+            }
+            else if (_isWallSliding && canSuperDash)
             {
                 StartCoroutine(SuperDash());
             }
@@ -207,11 +212,20 @@ public class PlayerMovement : MonoBehaviour
         // if (!IsGrounded() && IsWalled() && !_hasChargingLeftWall)
         _canDash = false;
         _isSuperDashing = true;
-        print("is super dashing");
-        print(_originalGravity);
         rb.gravityScale = 0f;
         rb.velocity = new Vector2(transform.localScale.x * superDashPower * -1, 0f);
         rb.constraints = RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
+        superTrail.emitting = true;
+    }
+
+    private void DownDash()
+    {
+        print("down dashing");
+        _canDash = false;
+        _isDownDashing = true;
+        rb.gravityScale = 0f;
+        rb.velocity = new Vector2(0f, transform.localScale.y * downDashPower * -1);
+        rb.constraints = RigidbodyConstraints2D.FreezePositionX | RigidbodyConstraints2D.FreezeRotation;
         superTrail.emitting = true;
     }
 
@@ -222,18 +236,23 @@ public class PlayerMovement : MonoBehaviour
 
     private void ResetSuperDash()
     {
+        _isDownDashing = false;
+        
         _isSuperDashing = false;
         rb.gravityScale = _originalGravity;
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         _hasLeftWall = false;
         superTrail.emitting = false;
+        
+        // not sure if this will be ok
+        _canDash = true;
+        _hasJumped = false;
     }
 
     private void WallSlide()
     {
         if (IsWalled() && !IsGrounded() && _horizontal != 0f)
         {
-            print(IsWalled());
             _isWallSliding = true;
             rb.velocity = new Vector2(rb.velocity.x, -wallSlidingSpeed);
         }

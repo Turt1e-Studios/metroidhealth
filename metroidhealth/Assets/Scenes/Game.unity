@@ -696,7 +696,7 @@ TrailRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 0.5
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -705,7 +705,7 @@ TrailRenderer:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
-        value: 0.5
+        value: 1
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1209,14 +1209,15 @@ MonoBehaviour:
   coyoteTime: 0.2
   jumpBufferTime: 0.2
   jumpCooldown: 0.4
-  superDashPower: 36
+  superDashPower: 40
   superDashStartup: 0.5
+  downDashPower: 30
   wallJumpingPower: {x: 8, y: 30}
   rb: {fileID: 977192667}
   groundCheck: {fileID: 1778088629}
   groundLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   tr: {fileID: 977192672}
   wallCheck: {fileID: 1385177626}
   wallCheck2: {fileID: 2001078423}
