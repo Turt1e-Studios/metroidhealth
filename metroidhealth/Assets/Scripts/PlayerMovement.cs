@@ -16,6 +16,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float wallSlidingSpeed = 2f;
     [SerializeField] private float wallJumpingTime = 0.2f;
     [SerializeField] private float wallJumpingDuration = 0.4f;
+    [SerializeField] private float coyoteTime = 0.2f;
+    [SerializeField] private float jumpBufferTime = 0.2f;
+    [SerializeField] private float jumpCooldown = 0.4f;
     [SerializeField] private Vector2 wallJumpingPower = new Vector2(8f, 16f);
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
@@ -37,6 +40,10 @@ public class PlayerMovement : MonoBehaviour
     private float _wallJumpingDirection;
     private float _wallJumpingCounter;
     
+    private bool isJumping;
+    private float coyoteTimeCounter;
+    private float jumpBufferCounter;
+
     void Update()
     {
         if (_isDashing)
@@ -51,23 +58,39 @@ public class PlayerMovement : MonoBehaviour
             _hasJumped = false;
             _canDash = true;
             _currentSpeed = speed;
+            coyoteTimeCounter = coyoteTime;
         }
         else
         {
             _currentSpeed = airSpeed;
+            coyoteTimeCounter -= Time.deltaTime;
         }
 
-        if (Input.GetKeyDown(KeyCode.W) && (IsGrounded() || (canDoubleJump && !_hasJumped)))
+        if (Input.GetKeyDown(KeyCode.W))
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
-            _hasJumped = true;
+            jumpBufferCounter = jumpBufferTime;
         }
-
-        if (Input.GetKeyUp(KeyCode.W) && rb.velocity.y > 0f)
+        else
         {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+            jumpBufferCounter -= Time.deltaTime;
         }
         
+        if (coyoteTimeCounter > 0f && jumpBufferCounter > 0f && !isJumping || (Input.GetKeyDown(KeyCode.W) && canDoubleJump && !_hasJumped))
+        {
+            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
+            jumpBufferCounter = 0f;
+            StartCoroutine(JumpCooldown());
+            _hasJumped = true;
+        }
+        
+        // Make jumps go higher if you press longer
+        if (Input.GetKeyUp(KeyCode.W) && rb.velocity.y > 0f)
+        {
+            print("jumping?");
+            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+            coyoteTimeCounter = 0f;
+        }
+
         if (Input.GetKeyDown(KeyCode.LeftShift) && _canDash && canDash)
         {
             StartCoroutine(Dash());
@@ -83,6 +106,13 @@ public class PlayerMovement : MonoBehaviour
         {
             Flip();
         }
+    }
+    
+    private IEnumerator JumpCooldown()
+    {
+        isJumping = true;
+        yield return new WaitForSeconds(jumpCooldown);
+        isJumping = false;
     }
 
     private void FixedUpdate()
