@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -242,7 +243,7 @@ public class PlayerMovement : MonoBehaviour
         _isDownDashing = false;
         
         _isSuperDashing = false;
-        rb.gravityScale = _originalGravity;
+        RevertGravity();
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         _hasLeftWall = false;
         superTrail.emitting = false;
@@ -310,5 +311,20 @@ public class PlayerMovement : MonoBehaviour
     public void MultiplyVelocity(float multiplier)
     {
         rb.velocity *= multiplier;
+    }
+
+    public void SetNegativeGravity()
+    {
+        rb.gravityScale = Mathf.Abs(rb.gravityScale) * -1;
+    }
+
+    public void MultiplyGravity(float multiplier)
+    {
+        rb.gravityScale *= -1;
+    }
+
+    public void RevertGravity()
+    {
+        rb.gravityScale = _originalGravity;
     }
 }
