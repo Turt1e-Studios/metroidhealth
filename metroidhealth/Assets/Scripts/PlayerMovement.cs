@@ -11,10 +11,16 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float dashingPower = 24f;
     [SerializeField] private float dashingTime = 0.2f;
     [SerializeField] private float dashingCooldown = 1f;
+    [SerializeField] private float wallSlidingSpeed = 2f;
+    [SerializeField] private float wallJumpingTime = 0.2f;
+    [SerializeField] private float wallJumpingDuration = 0.4f;
+    [SerializeField] private Vector2 wallJumpingPower = new Vector2(8f, 16f);
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private TrailRenderer tr;
+    [SerializeField] private Transform wallCheck;
+    [SerializeField] private LayerMask wallLayer;
 
     private float _horizontal;
     private bool _isFacingRight = true;
@@ -22,7 +28,12 @@ public class PlayerMovement : MonoBehaviour
     
     private bool _canDash = true;
     private bool _isDashing;
-
+    
+    private bool _isWallSliding;
+    private bool _isWallJumping;
+    private float _wallJumpingDirection;
+    private float _wallJumpingCounter;
+    
     void Update()
     {
         if (_isDashing)
@@ -54,12 +65,18 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(Dash());
         }
 
-        Flip();
+        WallSlide();
+        WallJump();
+        
+        if (!_isWallJumping)
+        {
+            Flip();
+        }
     }
 
     private void FixedUpdate()
     {
-        if (_isDashing)
+        if (_isDashing || _isWallJumping)
         {
             return;
         }
@@ -69,6 +86,11 @@ public class PlayerMovement : MonoBehaviour
     private bool IsGrounded()
     {
         return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+    }
+    
+    private bool IsWalled()
+    {
+        return Physics2D.OverlapCircle(wallCheck.position, 0.2f, wallLayer);
     }
 
     private void Flip()
@@ -96,5 +118,57 @@ public class PlayerMovement : MonoBehaviour
         _isDashing = false;
         yield return new WaitForSeconds(dashingCooldown);
         //_canDash = true;
+    }
+    
+    private void WallSlide()
+    {
+        print(IsWalled());
+        if (IsWalled() && !IsGrounded() && _horizontal != 0f)
+        {
+            _isWallSliding = true;
+            rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.y, -wallSlidingSpeed, float.MaxValue));
+        }
+        else
+        {
+            _isWallSliding = false;
+        }
+    }
+    
+    private void WallJump()
+    {
+        if (_isWallSliding)
+        {
+            _isWallJumping = false;
+            _wallJumpingDirection = -transform.localScale.x;
+            _wallJumpingCounter = wallJumpingTime;
+
+            CancelInvoke(nameof(StopWallJumping));
+        }
+        else
+        {
+            _wallJumpingCounter -= Time.deltaTime;
+        }
+
+        if (Input.GetButtonDown("Jump") && _wallJumpingCounter > 0f)
+        {
+            _isWallJumping = true;
+            rb.velocity = new Vector2(_wallJumpingDirection * wallJumpingPower.x, wallJumpingPower.y);
+            _wallJumpingCounter = 0f;
+
+            if (transform.localScale.x != _wallJumpingDirection)
+            {
+                _isFacingRight = !_isFacingRight;
+                Vector3 localScale = transform.localScale;
+                localScale.x *= -1f;
+                transform.localScale = localScale;
+            }
+
+            Invoke(nameof(StopWallJumping), wallJumpingDuration);
+        }
+    }
+    
+    private void StopWallJumping()
+    {
+        _isWallJumping = false;
     }
 }
