@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
     public bool canDoubleJump;
     public bool canDash;
     public bool canWallJump;
+    public bool canSuperDash;
     
     [SerializeField] private float speed = 10f;
     [SerializeField] private float airSpeed = 10f;
@@ -21,6 +22,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float jumpBufferTime = 0.2f;
     [SerializeField] private float jumpCooldown = 0.4f;
     [SerializeField] private float superDashPower = 40f;
+    [SerializeField] private float superDashStartup = 1f;
     [SerializeField] private Vector2 wallJumpingPower = new Vector2(8f, 16f);
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
@@ -97,9 +99,9 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            if (_isWallSliding)
+            if (_isWallSliding && canSuperDash)
             {
-                SuperDash();
+                StartCoroutine(SuperDash());
             }
             else if (_canDash && canDash)
             {
@@ -172,16 +174,20 @@ public class PlayerMovement : MonoBehaviour
         //_canDash = true;
     }
 
-    private void SuperDash()
+    private IEnumerator SuperDash()
     {
-        print("is super dashing");
-        _canDash = false;
-        _isSuperDashing = true;
-        _originalGravity = rb.gravityScale;
-        print(_originalGravity);
-        rb.gravityScale = 0f;
-        rb.velocity = new Vector2(transform.localScale.x * superDashPower * -1, 0f);
-        rb.constraints = RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
+        yield return new WaitForSeconds(superDashStartup);
+        if (!IsGrounded())
+        {
+            print("is super dashing");
+            _canDash = false;
+            _isSuperDashing = true;
+            _originalGravity = rb.gravityScale;
+            print(_originalGravity);
+            rb.gravityScale = 0f;
+            rb.velocity = new Vector2(transform.localScale.x * superDashPower * -1, 0f);
+            rb.constraints = RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D col)
