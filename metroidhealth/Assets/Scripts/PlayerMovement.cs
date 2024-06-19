@@ -32,6 +32,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform wallCheck;
     [SerializeField] private Transform wallCheck2;
     [SerializeField] private LayerMask wallLayer;
+    [SerializeField] private TrailRenderer superTrail;
 
     private float _horizontal;
     private bool _isFacingRight = true;
@@ -53,8 +54,6 @@ public class PlayerMovement : MonoBehaviour
     private bool _isSuperDashing;
     private float _originalGravity;
     private bool _hasLeftWall;
-    private bool _hasChargingLeftWall;
-    private bool _isCharging;
 
     private void Start()
     {
@@ -71,11 +70,6 @@ public class PlayerMovement : MonoBehaviour
         if (!IsWalled() && _isSuperDashing)
         {
             _hasLeftWall = true;
-        }
-
-        if (!IsWalled() && _isCharging)
-        {
-            _hasChargingLeftWall = true;
         }
 
         if (_isDashing || _isSuperDashing)
@@ -208,12 +202,9 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator SuperDash()
     {
-        _isCharging = true;
-        _hasChargingLeftWall = false;
         rb.constraints = RigidbodyConstraints2D.FreezeAll;
         yield return new WaitForSeconds(superDashStartup);
         // if (!IsGrounded() && IsWalled() && !_hasChargingLeftWall)
-        _isCharging = false;
         _canDash = false;
         _isSuperDashing = true;
         print("is super dashing");
@@ -221,6 +212,7 @@ public class PlayerMovement : MonoBehaviour
         rb.gravityScale = 0f;
         rb.velocity = new Vector2(transform.localScale.x * superDashPower * -1, 0f);
         rb.constraints = RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
+        superTrail.emitting = true;
     }
 
     private void OnCollisionEnter2D(Collision2D col)
@@ -234,6 +226,7 @@ public class PlayerMovement : MonoBehaviour
         rb.gravityScale = _originalGravity;
         rb.constraints = RigidbodyConstraints2D.FreezeRotation;
         _hasLeftWall = false;
+        superTrail.emitting = false;
     }
 
     private void WallSlide()
