@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
     public bool canDash;
     public bool canWallJump;
     public bool canSuperDash;
+    public bool canDownDash;
     
     [SerializeField] private float speed = 10f;
     [SerializeField] private float airSpeed = 10f;
@@ -23,6 +24,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float superDashPower = 40f;
     [SerializeField] private float superDashStartup = 1f;
     [SerializeField] private float downDashPower = 50f;
+    [SerializeField] private float downDashStartup = 0.25f;
     [SerializeField] private Vector2 wallJumpingPower = new Vector2(8f, 16f);
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
@@ -119,9 +121,9 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            if (Input.GetKey(KeyCode.S))
+            if (Input.GetKey(KeyCode.S) && canDownDash)
             {
-                DownDash();
+                StartCoroutine(DownDash());
             }
             else if (_isWallSliding && canSuperDash)
             {
@@ -218,9 +220,10 @@ public class PlayerMovement : MonoBehaviour
         superTrail.emitting = true;
     }
 
-    private void DownDash()
+    private IEnumerator DownDash()
     {
-        print("down dashing");
+        rb.constraints = RigidbodyConstraints2D.FreezeAll;
+        yield return new WaitForSeconds(downDashStartup);
         _canDash = false;
         _isDownDashing = true;
         rb.gravityScale = 0f;
