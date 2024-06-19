@@ -5,8 +5,10 @@ public class PlayerMovement : MonoBehaviour
 {
     public bool canDoubleJump;
     public bool canDash;
+    public bool canWallJump;
     
     [SerializeField] private float speed = 10f;
+    [SerializeField] private float airSpeed = 10f;
     [SerializeField] private float jumpingPower = 50f;
     [SerializeField] private float dashingPower = 24f;
     [SerializeField] private float dashingTime = 0.2f;
@@ -25,6 +27,7 @@ public class PlayerMovement : MonoBehaviour
     private float _horizontal;
     private bool _isFacingRight = true;
     private bool _hasJumped;
+    private float _currentSpeed;
     
     private bool _canDash = true;
     private bool _isDashing;
@@ -47,6 +50,11 @@ public class PlayerMovement : MonoBehaviour
         {
             _hasJumped = false;
             _canDash = true;
+            _currentSpeed = speed;
+        }
+        else
+        {
+            _currentSpeed = airSpeed;
         }
 
         if (Input.GetKeyDown(KeyCode.W) && (IsGrounded() || (canDoubleJump && !_hasJumped)))
@@ -66,8 +74,11 @@ public class PlayerMovement : MonoBehaviour
         }
 
         WallSlide();
-        WallJump();
-        
+        if (canWallJump)
+        {
+            WallJump();
+        }
+
         if (!_isWallJumping)
         {
             Flip();
@@ -80,7 +91,7 @@ public class PlayerMovement : MonoBehaviour
         {
             return;
         }
-        rb.velocity = new Vector2(_horizontal * speed, rb.velocity.y);
+        rb.velocity = new Vector2(_horizontal * _currentSpeed, rb.velocity.y);
     }
 
     private bool IsGrounded()
@@ -151,8 +162,12 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.W) && _wallJumpingCounter > 0f)
         {
+            // reset movement after wall jump
+            _canDash = true;
+            _hasJumped = false;
+            
             _isWallJumping = true;
-            rb.velocity += new Vector2(_wallJumpingDirection * wallJumpingPower.x, wallJumpingPower.y);
+            rb.velocity = new Vector2(_wallJumpingDirection * wallJumpingPower.x, wallJumpingPower.y);
             _wallJumpingCounter = 0f;
 
             if (transform.localScale.x != _wallJumpingDirection)
