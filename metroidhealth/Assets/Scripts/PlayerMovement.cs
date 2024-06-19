@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -19,6 +20,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float coyoteTime = 0.2f;
     [SerializeField] private float jumpBufferTime = 0.2f;
     [SerializeField] private float jumpCooldown = 0.4f;
+    [SerializeField] private float superDashPower = 40f;
     [SerializeField] private Vector2 wallJumpingPower = new Vector2(8f, 16f);
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
@@ -40,13 +42,16 @@ public class PlayerMovement : MonoBehaviour
     private float _wallJumpingDirection;
     private float _wallJumpingCounter;
     
-    private bool isJumping;
-    private float coyoteTimeCounter;
-    private float jumpBufferCounter;
+    private bool _isJumping;
+    private float _coyoteTimeCounter;
+    private float _jumpBufferCounter;
+
+    private bool _isSuperDashing;
+    private float _originalGravity;
 
     void Update()
     {
-        if (_isDashing)
+        if (_isDashing || _isSuperDashing)
         {
             return;
         }
@@ -58,27 +63,27 @@ public class PlayerMovement : MonoBehaviour
             _hasJumped = false;
             _canDash = true;
             _currentSpeed = speed;
-            coyoteTimeCounter = coyoteTime;
+            _coyoteTimeCounter = coyoteTime;
         }
         else
         {
             _currentSpeed = airSpeed;
-            coyoteTimeCounter -= Time.deltaTime;
+            _coyoteTimeCounter -= Time.deltaTime;
         }
 
         if (Input.GetKeyDown(KeyCode.W))
         {
-            jumpBufferCounter = jumpBufferTime;
+            _jumpBufferCounter = jumpBufferTime;
         }
         else
         {
-            jumpBufferCounter -= Time.deltaTime;
+            _jumpBufferCounter -= Time.deltaTime;
         }
         
-        if (coyoteTimeCounter > 0f && jumpBufferCounter > 0f && !isJumping || (Input.GetKeyDown(KeyCode.W) && canDoubleJump && !_hasJumped))
+        if (_coyoteTimeCounter > 0f && _jumpBufferCounter > 0f && !_isJumping || (Input.GetKeyDown(KeyCode.W) && canDoubleJump && !_hasJumped))
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
-            jumpBufferCounter = 0f;
+            _jumpBufferCounter = 0f;
             StartCoroutine(JumpCooldown());
             _hasJumped = true;
         }
@@ -86,14 +91,20 @@ public class PlayerMovement : MonoBehaviour
         // Make jumps go higher if you press longer
         if (Input.GetKeyUp(KeyCode.W) && rb.velocity.y > 0f)
         {
-            print("jumping?");
             rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
-            coyoteTimeCounter = 0f;
+            _coyoteTimeCounter = 0f;
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftShift) && _canDash && canDash)
+        if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            StartCoroutine(Dash());
+            if (_isWallSliding)
+            {
+                SuperDash();
+            }
+            else if (_canDash && canDash)
+            {
+                StartCoroutine(Dash());
+            }
         }
 
         WallSlide();
@@ -110,14 +121,14 @@ public class PlayerMovement : MonoBehaviour
     
     private IEnumerator JumpCooldown()
     {
-        isJumping = true;
+        _isJumping = true;
         yield return new WaitForSeconds(jumpCooldown);
-        isJumping = false;
+        _isJumping = false;
     }
 
     private void FixedUpdate()
     {
-        if (_isDashing || _isWallJumping)
+        if (_isDashing || _isWallJumping || _isSuperDashing)
         {
             return;
         }
@@ -160,7 +171,30 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(dashingCooldown);
         //_canDash = true;
     }
-    
+
+    private void SuperDash()
+    {
+        print("is super dashing");
+        _canDash = false;
+        _isSuperDashing = true;
+        _originalGravity = rb.gravityScale;
+        print(_originalGravity);
+        rb.gravityScale = 0f;
+        rb.velocity = new Vector2(transform.localScale.x * superDashPower * -1, 0f);
+        rb.constraints = RigidbodyConstraints2D.FreezePositionY | RigidbodyConstraints2D.FreezeRotation;
+    }
+
+    private void OnCollisionEnter2D(Collision2D col)
+    {
+        if (_isSuperDashing)
+        {
+            print("reset super dash");
+            _isSuperDashing = false;
+            rb.gravityScale = _originalGravity;
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        }
+    }
+
     private void WallSlide()
     {
         if (IsWalled() && !IsGrounded() && _horizontal != 0f)
