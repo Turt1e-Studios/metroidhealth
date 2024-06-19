@@ -202,7 +202,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 166340046}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -12.907841, y: 1.9865355, z: 0.057310104}
+  m_LocalPosition: {x: -12.90778, y: 1.9865355, z: 0.057310104}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -838,7 +838,7 @@ Transform:
   m_GameObject: {fileID: 870025311}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -13.07, y: 3.2, z: 10.05731}
-  m_LocalScale: {x: 6.275, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1632112648}
@@ -886,20 +886,20 @@ CompositeCollider2D:
   m_ColliderPaths:
   - m_Collider: {fileID: 1632112649}
     m_ColliderPaths:
-    - - X: 1214072832
-        Y: 115606688
-      - X: -1270095488
-        Y: 115606688
-      - X: -1270095488
+    - - X: 905409408
+        Y: 203772432
+      - X: -1188657792
+        Y: 203772432
+      - X: -1188657792
         Y: -112134720
-      - X: 1214072832
+      - X: 905409408
         Y: -112134720
   m_CompositePaths:
     m_Paths:
-    - - {x: 121.40726, y: -11.213472}
-      - {x: 121.40726, y: 11.560669}
-      - {x: -127.00955, y: 11.560639}
-      - {x: -127.00952, y: -11.213472}
+    - - {x: 90.54091, y: -11.213472}
+      - {x: 90.54091, y: 20.377243}
+      - {x: -118.86578, y: 20.377214}
+      - {x: -118.86575, y: -11.213472}
   m_VertexDistance: 0.0005
   m_OffsetDistance: 0.00005
 --- !u!1 &977192666
@@ -1054,6 +1054,7 @@ MonoBehaviour:
   canDoubleJump: 1
   canDash: 1
   canWallJump: 1
+  canSuperDash: 1
   speed: 16
   airSpeed: 16
   jumpingPower: 30
@@ -1066,7 +1067,8 @@ MonoBehaviour:
   coyoteTime: 0.2
   jumpBufferTime: 0.2
   jumpCooldown: 0.4
-  superDashPower: 40
+  superDashPower: 36
+  superDashStartup: 0.5
   wallJumpingPower: {x: 8, y: 30}
   rb: {fileID: 977192667}
   groundCheck: {fileID: 1778088629}
@@ -1591,7 +1593,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 1
-  m_Offset: {x: -0.44639587, y: 0.17359829}
+  m_Offset: {x: -14.162422, y: 4.5818853}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -1602,7 +1604,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 39.58834, y: 22.774141}
+  m_Size: {x: 209.40672, y: 31.590715}
   m_EdgeRadius: 0
 --- !u!212 &1632112650
 SpriteRenderer:

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -50,9 +51,25 @@ public class PlayerMovement : MonoBehaviour
 
     private bool _isSuperDashing;
     private float _originalGravity;
+    private bool _hasLeftWall;
+
+    private void Start()
+    {
+        _originalGravity = rb.gravityScale;
+    }
 
     void Update()
     {
+        if (IsWalled() && _isSuperDashing && _hasLeftWall)
+        {
+            ResetSuperDash();
+        }
+
+        if (!IsWalled() && _isSuperDashing)
+        {
+            _hasLeftWall = true;
+        }
+        
         if (_isDashing || _isSuperDashing)
         {
             return;
@@ -160,6 +177,8 @@ public class PlayerMovement : MonoBehaviour
     
     private IEnumerator Dash()
     {
+        if (_isSuperDashing) yield return null;
+
         _canDash = false;
         _isDashing = true;
         float originalGravity = rb.gravityScale;
@@ -179,10 +198,9 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(superDashStartup);
         if (!IsGrounded())
         {
-            print("is super dashing");
             _canDash = false;
             _isSuperDashing = true;
-            _originalGravity = rb.gravityScale;
+            print("is super dashing");
             print(_originalGravity);
             rb.gravityScale = 0f;
             rb.velocity = new Vector2(transform.localScale.x * superDashPower * -1, 0f);
@@ -192,13 +210,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D col)
     {
-        if (_isSuperDashing)
-        {
-            print("reset super dash");
-            _isSuperDashing = false;
-            rb.gravityScale = _originalGravity;
-            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-        }
+        ResetSuperDash();
+    }
+
+    private void ResetSuperDash()
+    {
+        _isSuperDashing = false;
+        rb.gravityScale = _originalGravity;
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        _hasLeftWall = false;
     }
 
     private void WallSlide()
