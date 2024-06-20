@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class LadderMovement : MonoBehaviour
 {
+    // Movement of the player when on a ladder
+    
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private float speed = 8f;
     private float _vertical;

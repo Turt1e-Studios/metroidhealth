@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlatformMovement : MonoBehaviour
 {
+    // Code for platforms to move from position to position
+    
     [SerializeField] private Transform[] positions;
     [SerializeField] private float speed;
 

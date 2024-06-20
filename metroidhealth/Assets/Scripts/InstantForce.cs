@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class InstantForce : MonoBehaviour
 {
+    // This script applies an instant force to the player for the explosion orb
+    
     [SerializeField] private float force;
     [SerializeField] private float minMultiplier = 0.5f;
     [SerializeField] private float duration;

@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    // All player movement
+    
+    // These bools control what abilities the player has obtained
     public bool canDoubleJump;
     public bool canDash;
     public bool canWallJump;
@@ -69,16 +72,17 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        // keep track of player's movement while dashing
         if ((IsDoubleWalled() && _isSuperDashing && _hasLeftWall) || (IsGrounded() && _isDownDashing))
         {
             ResetSuperDash();
         }
-
         if (!IsWalled() && _isSuperDashing)
         {
             _hasLeftWall = true;
         }
 
+        // can't do anything if you're dashing
         if (_isDashing || _isSuperDashing || _isDownDashing || !_canMoveHorizontally)
         {
             return;
@@ -86,6 +90,7 @@ public class PlayerMovement : MonoBehaviour
         
         _horizontal = Input.GetAxisRaw("Horizontal");
 
+        // reset movement abilities upon hitting the ground
         if (IsGrounded())
         {
             _hasJumped = false;
@@ -108,6 +113,7 @@ public class PlayerMovement : MonoBehaviour
             _jumpBufferCounter -= Time.deltaTime;
         }
         
+        // coyote time allows player to jump even after they leave a platform
         if (_coyoteTimeCounter > 0f && _jumpBufferCounter > 0f && !_isJumping || (Input.GetKeyDown(KeyCode.W) && canDoubleJump && !_hasJumped))
         {
             rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
@@ -123,6 +129,7 @@ public class PlayerMovement : MonoBehaviour
             _coyoteTimeCounter = 0f;
         }
 
+        // Dash abilities
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             if (Input.GetKey(KeyCode.S) && canDownDash)
@@ -172,6 +179,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    // the movement script directly sets horizontal movement so this has to be disabled from another script when a horizontal force is applied
     public void SetHorizontalMovement(bool value)
     {
         _canMoveHorizontally = value;

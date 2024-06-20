@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PlayerTeleport : MonoBehaviour
 {
+    // Teleport the player when they interact with a teleporter
+    
     private GameObject _currentTeleporter;
 
     void Update()

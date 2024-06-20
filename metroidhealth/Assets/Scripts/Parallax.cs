@@ -4,6 +4,8 @@ using UnityEngine;
  
 public class Parallax : MonoBehaviour
 {
+    // Copied this from a youtube tutorial, not sure if it works
+    
     //https://www.youtube.com/watch?v=wBol2xzxCOU
     public Vector2 parallaxEffectMultiplier;
     public bool infiniteHorizontal;

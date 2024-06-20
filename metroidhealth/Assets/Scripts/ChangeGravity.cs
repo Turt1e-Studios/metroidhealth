@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class ChangeGravity : MonoBehaviour
 {
+    // This script inverses the player's gravity when they touch this object
+    
     [SerializeField] private float gravityMultiplier;
 
     private Collider2D _collider2D;

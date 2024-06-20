@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class WindZone : MonoBehaviour
 {
+    // Constantly applies a force to the player
+    
     [SerializeField] private Vector2 windForce;
 
     private Collider2D _collider2D;
