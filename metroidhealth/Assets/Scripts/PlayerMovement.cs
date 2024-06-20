@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Unity.Mathematics;
 using UnityEngine;
@@ -78,7 +79,7 @@ public class PlayerMovement : MonoBehaviour
             _hasLeftWall = true;
         }
 
-        if (_isDashing || _isSuperDashing || _isDownDashing)
+        if (_isDashing || _isSuperDashing || _isDownDashing || !_canMoveHorizontally)
         {
             return;
         }

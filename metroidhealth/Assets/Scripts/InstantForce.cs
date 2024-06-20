@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,7 @@ using UnityEngine;
 public class InstantForce : MonoBehaviour
 {
     [SerializeField] private float force;
+    [SerializeField] private float minMultiplier = 0.5f;
     [SerializeField] private float duration;
     
     private Collider2D _collider2D;
@@ -25,7 +27,12 @@ public class InstantForce : MonoBehaviour
         {
             _playerCollider2D.gameObject.GetComponent<PlayerMovement>().SetHorizontalMovement(false);
             StartCoroutine(ResetControls());
-            _playerRigidbody2D.AddForce(force * (new Vector2(1 / (_playerCollider2D.transform.position - transform.position).x, 1 / (_playerCollider2D.transform.position - transform.position).y)), ForceMode2D.Impulse);
+            float ratioX = Math.Abs((_playerCollider2D.transform.position - transform.position).x) / (_collider2D.bounds.size.x / 2);
+            float ratioY = Math.Abs((_playerCollider2D.transform.position - transform.position).y) / (_collider2D.bounds.size.y / 2);
+            Vector2 multiplier = new Vector2(Mathf.Lerp(1, minMultiplier, ratioX), Mathf.Lerp(1, minMultiplier, ratioY));
+            print(multiplier.x);
+            Vector2 direction = new Vector2((_playerCollider2D.transform.position - transform.position).x, (_playerCollider2D.transform.position - transform.position).y).normalized;
+            _playerRigidbody2D.AddForce(force * (multiplier * direction), ForceMode2D.Impulse);
         }
     }
 
