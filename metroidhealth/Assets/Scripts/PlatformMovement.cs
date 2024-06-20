@@ -39,23 +39,23 @@ public class PlatformMovement : MonoBehaviour
         _previous = transform.position;
     }
     
-    private void OnCollisionEnter2D(Collision2D col)
-    {
-        if (col.gameObject.CompareTag("Player"))
-        {
-            col.transform.SetParent(transform);
-            // col.gameObject.transform.parent = gameObject.transform;
-            //col.gameObject.GetComponent<PlayerMovement>().OverrideVelocity(true, _velocity);
-        }
-    }
-    
-    private void OnCollisionExit2D(Collision2D other)
-    {
-        if (other.gameObject.CompareTag("Player"))
-        {
-            other.transform.SetParent(null);
-            // other.gameObject.transform.parent = null;
-            //other.gameObject.GetComponent<PlayerMovement>().OverrideVelocity(false, _velocity);
-        }
-    }
+    // private void OnCollisionEnter2D(Collision2D col)
+    // {
+    //     if (col.gameObject.CompareTag("Player"))
+    //     {
+    //         col.transform.SetParent(transform);
+    //         // col.gameObject.transform.parent = gameObject.transform;
+    //         //col.gameObject.GetComponent<PlayerMovement>().OverrideVelocity(true, _velocity);
+    //     }
+    // }
+    //
+    // private void OnCollisionExit2D(Collision2D other)
+    // {
+    //     if (other.gameObject.CompareTag("Player"))
+    //     {
+    //         other.transform.SetParent(null);
+    //         // other.gameObject.transform.parent = null;
+    //         //other.gameObject.GetComponent<PlayerMovement>().OverrideVelocity(false, _velocity);
+    //     }
+    // }
 }
