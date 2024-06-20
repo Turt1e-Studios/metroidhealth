@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -382,5 +383,30 @@ public class PlayerMovement : MonoBehaviour
     public void RevertGravity()
     {
         rb.gravityScale = _originalGravity;
+    }
+
+    public void SetDoubleJump(bool value)
+    {
+        canDoubleJump = value;
+    }
+    
+    public void SetDash(bool value)
+    {
+        canDash = value;
+    }
+    
+    public void SetWallJump(bool value)
+    {
+        canWallJump = value;
+    }
+
+    public void SetSuperDash(bool value)
+    {
+        canSuperDash = value;
+    }
+
+    public void SetDownDash(bool value)
+    {
+        canDownDash = value;
     }
 }
