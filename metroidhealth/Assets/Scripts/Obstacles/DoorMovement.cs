@@ -13,6 +13,7 @@ public class DoorMovement : Activatable
     private Vector2 _newPosition;
     private Vector2 _currentTarget;
     private bool _moving;
+    private bool _queued;
 
     private void Start()
     {
@@ -24,7 +25,15 @@ public class DoorMovement : Activatable
     {
         if ((Vector2) transform.position == _currentTarget)
         {
-            _moving = false;
+            if (_queued)
+            {
+                SwapTargets();
+            }
+            else
+            {
+                _moving = false;
+            }
+            _queued = false;
         }
         else if (_moving)
         {
@@ -36,8 +45,10 @@ public class DoorMovement : Activatable
     {
         if (_moving)
         {
+            _queued = true;
             return;
         }
+        
         _currentTarget = _newPosition;
         _moving = true;
     }
@@ -46,10 +57,16 @@ public class DoorMovement : Activatable
     {
         if (_moving)
         {
+            _queued = true;
             return;
         }
 
         _currentTarget = _originalPosition;
         _moving = true;
+    }
+
+    private void SwapTargets()
+    {
+        _currentTarget = (_currentTarget == _originalPosition) ? _newPosition : _originalPosition;
     }
 }
