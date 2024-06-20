@@ -30,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float superDashStartup = 1f;
     [SerializeField] private float downDashPower = 50f;
     [SerializeField] private float downDashStartup = 0.25f;
+    [Range(0, .3f)] [SerializeField] private float movementSmoothing = .05f;	
     [SerializeField] private Vector2 wallJumpingPower = new Vector2(8f, 16f);
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
@@ -66,10 +67,13 @@ public class PlayerMovement : MonoBehaviour
     private bool _canMoveHorizontally = true;
     private bool _overrideVelocity;
     private Vector2 _newVelocity;
+    private Rigidbody2D _rigidbody2D;
+    private Vector3 _velocity = Vector3.zero;
 
     private void Start()
     {
         _originalGravity = rb.gravityScale;
+        _rigidbody2D = GetComponent<Rigidbody2D>();
     }
 
     void Update()
@@ -162,6 +166,11 @@ public class PlayerMovement : MonoBehaviour
             Flip();
         }
     }
+
+    public bool IsFacingRight()
+    {
+        return _isFacingRight;
+    }
     
     private IEnumerator JumpCooldown()
     {
@@ -178,16 +187,25 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        if (_overrideVelocity)
-        {
-            rb.velocity = _newVelocity;
-        }
-        else if (_canMoveHorizontally)
-        {
-            float xVelocity = _horizontal * _currentSpeed;
-            print(xVelocity);
-            rb.velocity = new Vector2(xVelocity, rb.velocity.y);
-        }
+        // Move the character by finding the target velocity
+        Vector3 targetVelocity = new Vector2(_currentSpeed * _horizontal, _rigidbody2D.velocity.y);
+        // And then smoothing it out and applying it to the character
+        _rigidbody2D.velocity = Vector3.SmoothDamp(_rigidbody2D.velocity, targetVelocity, ref _velocity, movementSmoothing);
+        
+        // float xVelocity = _horizontal * _currentSpeed;
+        // print(xVelocity);
+        // rb.velocity = new Vector2(xVelocity, rb.velocity.y);
+        
+        // if (_overrideVelocity)
+        // {
+        //     rb.velocity = _newVelocity;
+        // }
+        // else if (_canMoveHorizontally)
+        // {
+        //     float xVelocity = _horizontal * _currentSpeed;
+        //     print(xVelocity);
+        //     rb.velocity = new Vector2(xVelocity, rb.velocity.y);
+        // }
     }
 
     public void OverrideVelocity(bool doesOverride, Vector2 velocity)
