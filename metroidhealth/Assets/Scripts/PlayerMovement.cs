@@ -59,6 +59,8 @@ public class PlayerMovement : MonoBehaviour
 
     private bool _isDownDashing;
 
+    private bool _canMoveHorizontally = true;
+
     private void Start()
     {
         _originalGravity = rb.gravityScale;
@@ -161,7 +163,17 @@ public class PlayerMovement : MonoBehaviour
         {
             return;
         }
-        rb.velocity = new Vector2(_horizontal * _currentSpeed, rb.velocity.y);
+
+        if (_canMoveHorizontally)
+        {
+            float xVelocity = _horizontal * _currentSpeed;
+            rb.velocity = new Vector2(xVelocity, rb.velocity.y);
+        }
+    }
+
+    public void SetHorizontalMovement(bool value)
+    {
+        _canMoveHorizontally = value;
     }
 
     private bool IsGrounded()
