@@ -64,6 +64,8 @@ public class PlayerMovement : MonoBehaviour
     private bool _isDownDashing;
 
     private bool _canMoveHorizontally = true;
+    private bool _overrideVelocity;
+    private Vector2 _newVelocity;
 
     private void Start()
     {
@@ -75,16 +77,19 @@ public class PlayerMovement : MonoBehaviour
         // keep track of player's movement while dashing
         if ((IsDoubleWalled() && _isSuperDashing && _hasLeftWall) || (IsGrounded() && _isDownDashing))
         {
+            print("1");
             ResetSuperDash();
         }
         if (!IsWalled() && _isSuperDashing)
         {
+            print("2");
             _hasLeftWall = true;
         }
 
         // can't do anything if you're dashing
         if (_isDashing || _isSuperDashing || _isDownDashing || !_canMoveHorizontally)
         {
+            print("3");
             return;
         }
         
@@ -169,14 +174,26 @@ public class PlayerMovement : MonoBehaviour
     {
         if (_isDashing || _isWallJumping || _isSuperDashing)
         {
+            print("4");
             return;
         }
 
-        if (_canMoveHorizontally)
+        if (_overrideVelocity)
+        {
+            rb.velocity = _newVelocity;
+        }
+        else if (_canMoveHorizontally)
         {
             float xVelocity = _horizontal * _currentSpeed;
+            print(xVelocity);
             rb.velocity = new Vector2(xVelocity, rb.velocity.y);
         }
+    }
+
+    public void OverrideVelocity(bool doesOverride, Vector2 velocity)
+    {
+        _overrideVelocity = doesOverride;
+        _newVelocity = velocity;
     }
 
     // the movement script directly sets horizontal movement so this has to be disabled from another script when a horizontal force is applied
