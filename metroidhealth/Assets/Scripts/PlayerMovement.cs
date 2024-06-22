@@ -41,6 +41,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform wallCheck2;
     [SerializeField] private LayerMask wallLayer;
     [SerializeField] private TrailRenderer superTrail;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+
 
     private float _horizontal;
     private bool _isFacingRight = true;
@@ -70,102 +72,111 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 _newVelocity;
     private Rigidbody2D _rigidbody2D;
     private Vector3 _velocity = Vector3.zero;
-
+    private bool _isDead = false;
+    private Color _originalColor;
+    private Vector2 _respawnPosition;
+    
     private void Start()
     {
         _originalGravity = rb.gravityScale;
         _rigidbody2D = GetComponent<Rigidbody2D>();
+        _originalColor = spriteRenderer.color;
+        _respawnPosition = transform.position;
     }
 
     void Update()
     {
-        // keep track of player's movement while dashing
-        if ((IsDoubleWalled() && _isSuperDashing && _hasLeftWall) || (IsGrounded() && _isDownDashing))
+        if (!_isDead)
         {
-            print("1");
-            ResetSuperDash();
-        }
-        if (!IsWalled() && _isSuperDashing)
-        {
-            print("2");
-            _hasLeftWall = true;
-        }
+            // keep track of player's movement while dashing
+            if ((IsDoubleWalled() && _isSuperDashing && _hasLeftWall) || (IsGrounded() && _isDownDashing))
+            {
+                print("1");
+                ResetSuperDash();
+            }
+            if (!IsWalled() && _isSuperDashing)
+            {
+                print("2");
+                _hasLeftWall = true;
+            }
 
-        // can't do anything if you're dashing
-        if (_isDashing || _isSuperDashing || _isDownDashing || !_canMoveHorizontally)
-        {
-            print("3");
-            return;
+            // can't do anything if you're dashing
+            if (_isDashing || _isSuperDashing || _isDownDashing || !_canMoveHorizontally)
+            {
+                print("3");
+                return;
+            }
+            
+            _horizontal = Input.GetAxisRaw("Horizontal");
+
+            // reset movement abilities upon hitting the ground
+            if (IsGrounded())
+            {
+                _hasJumped = false;
+                _canDash = true;
+                _currentSpeed = speed;
+                _coyoteTimeCounter = coyoteTime;
+            }
+            else
+            {
+                _currentSpeed = airSpeed;
+                _coyoteTimeCounter -= Time.deltaTime;
+            }
+
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                _jumpBufferCounter = jumpBufferTime;
+            }
+            else
+            {
+                _jumpBufferCounter -= Time.deltaTime;
+            }
+            
+            // coyote time allows player to jump even after they leave a platform
+            if ((_coyoteTimeCounter > 0f && _jumpBufferCounter > 0f && !_isJumping) || (Input.GetKeyDown(KeyCode.W) && canDoubleJump && !_hasJumped))
+            {
+                rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
+                _jumpBufferCounter = 0f;
+                StartCoroutine(JumpCooldown());
+                _hasJumped = true;
+            }
+            
+            // Make jumps go higher if you press longer
+            if (Input.GetKeyUp(KeyCode.W) && rb.velocity.y > 0f)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+                _coyoteTimeCounter = 0f;
+            }
+
+            // Dash abilities
+            if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+                if (Input.GetKey(KeyCode.S) && canDownDash)
+                {
+                    StartCoroutine(DownDash());
+                }
+                else if (_isWallSliding && canSuperDash)
+                {
+                    StartCoroutine(SuperDash());
+                }
+                else if (_canDash && canDash)
+                {
+                    StartCoroutine(Dash());
+                }
+            }
+
+            WallSlide();
+            if (canWallJump)
+            {
+                WallJump();
+            }
+
+            if (!_isWallJumping)
+            {
+                Flip();
+            }
         }
         
-        _horizontal = Input.GetAxisRaw("Horizontal");
-
-        // reset movement abilities upon hitting the ground
-        if (IsGrounded())
-        {
-            _hasJumped = false;
-            _canDash = true;
-            _currentSpeed = speed;
-            _coyoteTimeCounter = coyoteTime;
-        }
-        else
-        {
-            _currentSpeed = airSpeed;
-            _coyoteTimeCounter -= Time.deltaTime;
-        }
-
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            _jumpBufferCounter = jumpBufferTime;
-        }
-        else
-        {
-            _jumpBufferCounter -= Time.deltaTime;
-        }
-        
-        // coyote time allows player to jump even after they leave a platform
-        if (_coyoteTimeCounter > 0f && _jumpBufferCounter > 0f && !_isJumping || (Input.GetKeyDown(KeyCode.W) && canDoubleJump && !_hasJumped))
-        {
-            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
-            _jumpBufferCounter = 0f;
-            StartCoroutine(JumpCooldown());
-            _hasJumped = true;
-        }
-        
-        // Make jumps go higher if you press longer
-        if (Input.GetKeyUp(KeyCode.W) && rb.velocity.y > 0f)
-        {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
-            _coyoteTimeCounter = 0f;
-        }
-
-        // Dash abilities
-        if (Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            if (Input.GetKey(KeyCode.S) && canDownDash)
-            {
-                StartCoroutine(DownDash());
-            }
-            else if (_isWallSliding && canSuperDash)
-            {
-                StartCoroutine(SuperDash());
-            }
-            else if (_canDash && canDash)
-            {
-                StartCoroutine(Dash());
-            }
-        }
-
-        WallSlide();
-        if (canWallJump)
-        {
-            WallJump();
-        }
-
-        if (!_isWallJumping)
-        {
-            Flip();
-        }
     }
 
     public bool IsFacingRight()
@@ -188,10 +199,13 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        // Move the character by finding the target velocity
-        Vector3 targetVelocity = new Vector2(_currentSpeed * _horizontal, _rigidbody2D.velocity.y);
-        // And then smoothing it out and applying it to the character
-        _rigidbody2D.velocity = Vector3.SmoothDamp(_rigidbody2D.velocity, targetVelocity, ref _velocity, movementSmoothing);
+        if (!_isDead)
+        {
+            // Move the character by finding the target velocity
+            Vector3 targetVelocity = new Vector2(_currentSpeed * _horizontal, _rigidbody2D.velocity.y);
+            // And then smoothing it out and applying it to the character
+            _rigidbody2D.velocity = Vector3.SmoothDamp(_rigidbody2D.velocity, targetVelocity, ref _velocity, movementSmoothing);
+        }
         
         // float xVelocity = _horizontal * _currentSpeed;
         // print(xVelocity);
@@ -208,6 +222,80 @@ public class PlayerMovement : MonoBehaviour
         //     rb.velocity = new Vector2(xVelocity, rb.velocity.y);
         // }
     }
+
+    private void OnCollisionEnter2D(Collision2D col)
+    {
+        ResetSuperDash();
+
+        // make player move with moving platform
+        
+        if (col.gameObject.CompareTag("MovingPlatform") && PlayerOnPlatform(col))
+        {
+            transform.SetParent(col.transform);
+        }
+
+        // check collision with spike/obstacle
+        if (col.gameObject.CompareTag("Obstacle") && !_isDead)
+        {   
+            StartCoroutine(DeathAndRespawn());
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("MovingPlatform"))
+        {
+            transform.SetParent(null);   
+        }
+    }
+
+    private IEnumerator DeathAndRespawn()
+    {
+        _isDead = true;
+        // reset game states
+        
+        rb.velocity = Vector2.zero;
+        
+        // death animation
+
+
+        for (int i = 0; i < 5; i++)
+        {
+            spriteRenderer.color = new Color(_originalColor.r, _originalColor.g, _originalColor.b, 0);
+            yield return new WaitForSeconds(0.125f);
+            spriteRenderer.color = _originalColor;
+            yield return new WaitForSeconds(0.125f);
+        }
+
+        transform.position = _respawnPosition;
+        _isDead = false;
+    }
+
+    private bool PlayerOnPlatform(Collision2D collision)
+    {
+        BoxCollider2D playerCollider = GetComponent<BoxCollider2D>();
+        
+        float playerBottom = playerCollider.bounds.min.y;
+        float platformTop = collision.collider.bounds.max.y;
+        return playerBottom >= platformTop - 0.1f;
+    }
+
+    private void ResetSuperDash()
+    {
+        _isDownDashing = false;
+        
+        _isSuperDashing = false;
+        RevertGravity();
+        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        _hasLeftWall = false;
+        superTrail.emitting = false;
+        
+        // not sure if this will be ok
+        _canDash = true;
+        _hasJumped = false;
+    }
+
+    
 
     public void OverrideVelocity(bool doesOverride, Vector2 velocity)
     {
@@ -290,50 +378,7 @@ public class PlayerMovement : MonoBehaviour
         superTrail.emitting = true;
     }
 
-    private void OnCollisionEnter2D(Collision2D col)
-    {
-        ResetSuperDash();
-
-        // make player move with moving platform
-        
-        if (col.gameObject.CompareTag("MovingPlatform") && PlayerOnPlatform(col))
-        {
-            transform.SetParent(col.transform);
-            
-        }
-    }
-
-    private void OnCollisionExit2D(Collision2D other)
-    {
-        if (other.gameObject.CompareTag("MovingPlatform"))
-        {
-            transform.SetParent(null);   
-        }
-    }
-
-    private bool PlayerOnPlatform(Collision2D collision)
-    {
-        BoxCollider2D playerCollider = GetComponent<BoxCollider2D>();
-        
-        float playerBottom = playerCollider.bounds.min.y;
-        float platformTop = collision.collider.bounds.max.y;
-        return playerBottom >= platformTop - 0.1f;
-    }
-
-    private void ResetSuperDash()
-    {
-        _isDownDashing = false;
-        
-        _isSuperDashing = false;
-        RevertGravity();
-        rb.constraints = RigidbodyConstraints2D.FreezeRotation;
-        _hasLeftWall = false;
-        superTrail.emitting = false;
-        
-        // not sure if this will be ok
-        _canDash = true;
-        _hasJumped = false;
-    }
+    
 
     private void WallSlide()
     {
@@ -433,8 +478,6 @@ public class PlayerMovement : MonoBehaviour
     public void SetDownDash(bool value)
     {
         canDownDash = value;
-    }
-
-    
+    }    
     
 }

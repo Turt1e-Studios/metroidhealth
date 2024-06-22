@@ -2172,8 +2172,8 @@ GameObject:
   - component: {fileID: 977192669}
   - component: {fileID: 977192668}
   - component: {fileID: 977192667}
-  - component: {fileID: 977192671}
   - component: {fileID: 977192672}
+  - component: {fileID: 977192676}
   - component: {fileID: 977192673}
   - component: {fileID: 977192674}
   - component: {fileID: 977192675}
@@ -2304,53 +2304,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &977192671
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 977192666}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f68ca00ff6142542b02a2203f5e99aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  canDoubleJump: 0
-  canDash: 0
-  canWallJump: 0
-  canSuperDash: 0
-  canDownDash: 0
-  speed: 16
-  airSpeed: 16
-  jumpingPower: 30
-  dashingPower: 24
-  dashingTime: 0.2
-  dashingCooldown: 0.25
-  wallSlidingSpeed: 9.8
-  wallJumpingTime: 0.1
-  wallJumpingDuration: 0.15
-  coyoteTime: 0.2
-  jumpBufferTime: 0.2
-  jumpCooldown: 0.4
-  superDashPower: 40
-  superDashStartup: 0.5
-  downDashPower: 30
-  downDashStartup: 0.25
-  movementSmoothing: 0.05
-  wallJumpingPower: {x: 8, y: 30}
-  rb: {fileID: 977192667}
-  groundCheck: {fileID: 1778088629}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 192
-  tr: {fileID: 977192672}
-  wallCheck: {fileID: 1385177626}
-  wallCheck2: {fileID: 2001078423}
-  wallLayer:
-    serializedVersion: 2
-    m_Bits: 192
-  superTrail: {fileID: 556578978}
 --- !u!96 &977192672
 TrailRenderer:
   serializedVersion: 2
@@ -2500,6 +2453,54 @@ MonoBehaviour:
   grabPoint: {fileID: 1262110682}
   rayPoint: {fileID: 117498956}
   rayDistance: 1
+--- !u!114 &977192676
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 977192666}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f68ca00ff6142542b02a2203f5e99aa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canDoubleJump: 0
+  canDash: 0
+  canWallJump: 0
+  canSuperDash: 0
+  canDownDash: 0
+  speed: 16
+  airSpeed: 16
+  jumpingPower: 30
+  dashingPower: 24
+  dashingTime: 0.2
+  dashingCooldown: 0.25
+  wallSlidingSpeed: 9.8
+  wallJumpingTime: 0.1
+  wallJumpingDuration: 0.15
+  coyoteTime: 0.2
+  jumpBufferTime: 0.2
+  jumpCooldown: 0.4
+  superDashPower: 40
+  superDashStartup: 0.5
+  downDashPower: 30
+  downDashStartup: 0.25
+  movementSmoothing: 0.05
+  wallJumpingPower: {x: 8, y: 30}
+  rb: {fileID: 977192667}
+  groundCheck: {fileID: 1778088629}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 192
+  tr: {fileID: 977192672}
+  wallCheck: {fileID: 1385177626}
+  wallCheck2: {fileID: 2001078423}
+  wallLayer:
+    serializedVersion: 2
+    m_Bits: 192
+  superTrail: {fileID: 556578978}
+  spriteRenderer: {fileID: 977192669}
 --- !u!1 &986761506
 GameObject:
   m_ObjectHideFlags: 0
@@ -2847,6 +2848,10 @@ PrefabInstance:
     - target: {fileID: 628993537094632856, guid: b15367a632004e34ea97611b6cdec55f, type: 3}
       propertyPath: m_Name
       value: Triangle (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 628993537094632856, guid: b15367a632004e34ea97611b6cdec55f, type: 3}
+      propertyPath: m_TagString
+      value: Obstacle
       objectReference: {fileID: 0}
     - target: {fileID: 5469201673734531982, guid: b15367a632004e34ea97611b6cdec55f, type: 3}
       propertyPath: m_RootOrder
@@ -3223,6 +3228,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Triangle (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 628993537094632856, guid: b15367a632004e34ea97611b6cdec55f, type: 3}
+      propertyPath: m_TagString
+      value: Obstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 5469201673734531982, guid: b15367a632004e34ea97611b6cdec55f, type: 3}
       propertyPath: m_RootOrder
       value: 6
@@ -3400,6 +3409,10 @@ PrefabInstance:
     - target: {fileID: 628993537094632856, guid: b15367a632004e34ea97611b6cdec55f, type: 3}
       propertyPath: m_Name
       value: Triangle (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 628993537094632856, guid: b15367a632004e34ea97611b6cdec55f, type: 3}
+      propertyPath: m_TagString
+      value: Obstacle
       objectReference: {fileID: 0}
     - target: {fileID: 5469201673734531982, guid: b15367a632004e34ea97611b6cdec55f, type: 3}
       propertyPath: m_RootOrder
@@ -3628,6 +3641,10 @@ PrefabInstance:
     - target: {fileID: 628993537094632856, guid: b15367a632004e34ea97611b6cdec55f, type: 3}
       propertyPath: m_Name
       value: Triangle (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 628993537094632856, guid: b15367a632004e34ea97611b6cdec55f, type: 3}
+      propertyPath: m_TagString
+      value: Obstacle
       objectReference: {fileID: 0}
     - target: {fileID: 5469201673734531982, guid: b15367a632004e34ea97611b6cdec55f, type: 3}
       propertyPath: m_RootOrder
@@ -4169,6 +4186,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Triangle (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 628993537094632856, guid: b15367a632004e34ea97611b6cdec55f, type: 3}
+      propertyPath: m_TagString
+      value: Obstacle
+      objectReference: {fileID: 0}
     - target: {fileID: 5469201673734531982, guid: b15367a632004e34ea97611b6cdec55f, type: 3}
       propertyPath: m_RootOrder
       value: 8
@@ -4585,6 +4606,10 @@ PrefabInstance:
     - target: {fileID: 628993537094632856, guid: b15367a632004e34ea97611b6cdec55f, type: 3}
       propertyPath: m_Name
       value: Triangle
+      objectReference: {fileID: 0}
+    - target: {fileID: 628993537094632856, guid: b15367a632004e34ea97611b6cdec55f, type: 3}
+      propertyPath: m_TagString
+      value: Obstacle
       objectReference: {fileID: 0}
     - target: {fileID: 5469201673734531982, guid: b15367a632004e34ea97611b6cdec55f, type: 3}
       propertyPath: m_RootOrder

@@ -8,6 +8,7 @@ TagManager:
   - Ladder
   - Teleporter
   - MovingPlatform
+  - Obstacle
   layers:
   - Default
   - TransparentFX
