@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class GrabObjects : MonoBehaviour
 {
+    // Allows player to grab and reposition objects
+    
     [SerializeField] private Transform grabPoint;
     [SerializeField] private Transform rayPoint;
     [SerializeField] private float rayDistance;

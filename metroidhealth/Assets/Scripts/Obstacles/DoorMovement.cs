@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class DoorMovement : Activatable
 {
+    // Movement of the door
+    
     [SerializeField] private Transform originalTransform;
     [SerializeField] private Transform newTransform;
     [SerializeField] private float speed;

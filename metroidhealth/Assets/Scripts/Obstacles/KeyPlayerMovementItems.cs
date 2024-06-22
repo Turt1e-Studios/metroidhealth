@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class KeyPlayerMovementItems : Item
 {
+    // The items that grant player abilities like double jump etc
+    
     [SerializeField] [Range(1, 5)] private int ability;
     private PlayerMovement _playerMovement;
 
