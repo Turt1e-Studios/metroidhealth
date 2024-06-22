@@ -27,6 +27,11 @@ public class PlatformMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
+    }
+
+    private void FixedUpdate()
+    {
         if ((Vector2) transform.position == _originalPositions[_currentPos])
         {
             _currentPos = (_currentPos + 1) % positions.Length;
@@ -38,24 +43,9 @@ public class PlatformMovement : MonoBehaviour
         _velocity = ((Vector2) (transform.position) - _previous) / Time.deltaTime;
         _previous = transform.position;
     }
-    
-    // private void OnCollisionEnter2D(Collision2D col)
-    // {
-    //     if (col.gameObject.CompareTag("Player"))
-    //     {
-    //         col.transform.SetParent(transform);
-    //         // col.gameObject.transform.parent = gameObject.transform;
-    //         //col.gameObject.GetComponent<PlayerMovement>().OverrideVelocity(true, _velocity);
-    //     }
-    // }
-    //
-    // private void OnCollisionExit2D(Collision2D other)
-    // {
-    //     if (other.gameObject.CompareTag("Player"))
-    //     {
-    //         other.transform.SetParent(null);
-    //         // other.gameObject.transform.parent = null;
-    //         //other.gameObject.GetComponent<PlayerMovement>().OverrideVelocity(false, _velocity);
-    //     }
-    // }
+    public Vector2 GetVelocity()
+    {
+        return _velocity;
+    }
+
 }

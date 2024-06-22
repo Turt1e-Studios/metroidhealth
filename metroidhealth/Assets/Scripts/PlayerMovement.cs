@@ -293,6 +293,31 @@ public class PlayerMovement : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D col)
     {
         ResetSuperDash();
+
+        // make player move with moving platform
+        
+        if (col.gameObject.CompareTag("MovingPlatform") && PlayerOnPlatform(col))
+        {
+            transform.SetParent(col.transform);
+            
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag("MovingPlatform"))
+        {
+            transform.SetParent(null);   
+        }
+    }
+
+    private bool PlayerOnPlatform(Collision2D collision)
+    {
+        BoxCollider2D playerCollider = GetComponent<BoxCollider2D>();
+        
+        float playerBottom = playerCollider.bounds.min.y;
+        float platformTop = collision.collider.bounds.max.y;
+        return playerBottom >= platformTop - 0.1f;
     }
 
     private void ResetSuperDash()
@@ -409,4 +434,7 @@ public class PlayerMovement : MonoBehaviour
     {
         canDownDash = value;
     }
+
+    
+    
 }
