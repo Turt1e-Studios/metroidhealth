@@ -43,9 +43,15 @@ public class PlatformMovement : MonoBehaviour
         _velocity = ((Vector2) (transform.position) - _previous) / Time.deltaTime;
         _previous = transform.position;
     }
+
+    
+
+
     public Vector2 GetVelocity()
     {
         return _velocity;
     }
+
+
 
 }
