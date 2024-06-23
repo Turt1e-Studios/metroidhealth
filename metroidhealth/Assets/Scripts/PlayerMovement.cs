@@ -36,6 +36,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private LayerMask boxLayer;
     [SerializeField] private TrailRenderer tr;
     [SerializeField] private Transform wallCheck;
     [SerializeField] private Transform wallCheck2;
@@ -125,6 +126,7 @@ public class PlayerMovement : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.W))
             {
+                
                 _jumpBufferCounter = jumpBufferTime;
             }
             else
@@ -133,8 +135,11 @@ public class PlayerMovement : MonoBehaviour
             }
             
             // coyote time allows player to jump even after they leave a platform
+            print((_coyoteTimeCounter > 0f && _jumpBufferCounter > 0f && !_isJumping));
+            print((Input.GetKeyDown(KeyCode.W) && canDoubleJump && !_hasJumped));
             if ((_coyoteTimeCounter > 0f && _jumpBufferCounter > 0f && !_isJumping) || (Input.GetKeyDown(KeyCode.W) && canDoubleJump && !_hasJumped))
             {
+                print("jumped");
                 rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
                 _jumpBufferCounter = 0f;
                 StartCoroutine(JumpCooldown());
@@ -229,9 +234,20 @@ public class PlayerMovement : MonoBehaviour
 
         // make player move with moving platform
         
-        if (col.gameObject.CompareTag("MovingPlatform") && PlayerOnPlatform(col))
+        if (col.gameObject.CompareTag("MovingPlatform") && OnTop(col))
         {
             transform.SetParent(col.transform);
+        }
+
+        
+        if (col.gameObject.CompareTag("Box") && OnTop(col))
+        {
+            Collision2D _parentMovingPlatform = col.gameObject.GetComponent<BoxMovement>().getParentMovingPlatform(); 
+            if (_parentMovingPlatform != null)
+            {
+                transform.SetParent(_parentMovingPlatform.transform);
+            }
+            
         }
 
         // check collision with spike/obstacle
@@ -243,7 +259,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("MovingPlatform"))
+        if (other.gameObject.CompareTag("MovingPlatform") || (other.gameObject.CompareTag("Box") && other.gameObject.GetComponent<BoxMovement>().getParentMovingPlatform() != null))
         {
             transform.SetParent(null);   
         }
@@ -271,14 +287,15 @@ public class PlayerMovement : MonoBehaviour
         _isDead = false;
     }
 
-    private bool PlayerOnPlatform(Collision2D collision)
+    private bool OnTop(Collision2D collision)
     {
         BoxCollider2D playerCollider = GetComponent<BoxCollider2D>();
         
         float playerBottom = playerCollider.bounds.min.y;
-        float platformTop = collision.collider.bounds.max.y;
-        return playerBottom >= platformTop - 0.1f;
+        float collisionTop = collision.collider.bounds.max.y;
+        return playerBottom >= collisionTop - 0.1f;
     }
+
 
     private void ResetSuperDash()
     {
@@ -311,7 +328,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool IsGrounded()
     {
-        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
+        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer) || Physics2D.OverlapCircle(groundCheck.position, 0.2f, boxLayer);
     }
     
     private bool IsWalled()
