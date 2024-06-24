@@ -12,7 +12,7 @@ public class PressurePlate : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D col)
     {
-        if (col.gameObject.CompareTag("Object"))
+        if (col.gameObject.CompareTag("Box"))
         {
             target.GetComponent<Activatable>().Activate();
         }
@@ -20,7 +20,7 @@ public class PressurePlate : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("Object"))
+        if (other.gameObject.CompareTag("Box"))
         {
             target.GetComponent<Activatable>().Deactivate();
         }
