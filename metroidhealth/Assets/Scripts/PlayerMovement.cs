@@ -36,7 +36,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField] private LayerMask boxLayer;
     [SerializeField] private TrailRenderer tr;
     [SerializeField] private Transform wallCheck;
     [SerializeField] private Transform wallCheck2;
@@ -135,11 +134,8 @@ public class PlayerMovement : MonoBehaviour
             }
             
             // coyote time allows player to jump even after they leave a platform
-            print((_coyoteTimeCounter > 0f && _jumpBufferCounter > 0f && !_isJumping));
-            print((Input.GetKeyDown(KeyCode.W) && canDoubleJump && !_hasJumped));
             if ((_coyoteTimeCounter > 0f && _jumpBufferCounter > 0f && !_isJumping) || (Input.GetKeyDown(KeyCode.W) && canDoubleJump && !_hasJumped))
             {
-                print("jumped");
                 rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
                 _jumpBufferCounter = 0f;
                 StartCoroutine(JumpCooldown());
@@ -234,13 +230,13 @@ public class PlayerMovement : MonoBehaviour
 
         // make player move with moving platform
         
-        if (col.gameObject.CompareTag("MovingPlatform") && OnTop(col))
+        if (col.gameObject.CompareTag("MovingPlatform") && OnTop(col.collider))
         {
             transform.SetParent(col.transform);
         }
 
         
-        if (col.gameObject.CompareTag("Box") && OnTop(col))
+        if (col.gameObject.CompareTag("Box") && OnTop(col.collider))
         {
             Collision2D _parentMovingPlatform = col.gameObject.GetComponent<BoxMovement>().getParentMovingPlatform(); 
             if (_parentMovingPlatform != null)
@@ -287,13 +283,13 @@ public class PlayerMovement : MonoBehaviour
         _isDead = false;
     }
 
-    private bool OnTop(Collision2D collision)
+    private bool OnTop(Collider2D bottomCollision)
     {
-        BoxCollider2D playerCollider = GetComponent<BoxCollider2D>();
+        BoxCollider2D topCollider = GetComponent<BoxCollider2D>();
         
-        float playerBottom = playerCollider.bounds.min.y;
-        float collisionTop = collision.collider.bounds.max.y;
-        return playerBottom >= collisionTop - 0.1f;
+        float topObject = topCollider.bounds.min.y;
+        float bottomObject = bottomCollision.bounds.max.y;
+        return topObject >= bottomObject - 0.1f;
     }
 
 
@@ -328,7 +324,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool IsGrounded()
     {
-        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer) || Physics2D.OverlapCircle(groundCheck.position, 0.2f, boxLayer);
+        return Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer);
     }
     
     private bool IsWalled()

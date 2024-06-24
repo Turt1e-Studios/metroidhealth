@@ -22,7 +22,7 @@ public class DoorMovement : Activatable
         _originalPosition = originalTransform.position;
         _newPosition = newTransform.position;
     }
-
+    /*
     private void Update()
     {
         if ((Vector2) transform.position == _currentTarget)
@@ -70,5 +70,31 @@ public class DoorMovement : Activatable
     private void SwapTargets()
     {
         _currentTarget = (_currentTarget == _originalPosition) ? _newPosition : _originalPosition;
+    }*/
+
+    private void Update()
+    {
+        if (_moving)
+        {
+            transform.position = Vector2.MoveTowards(transform.position, _currentTarget, speed * Time.deltaTime);
+        }
+        if ((Vector2) transform.position == _currentTarget)
+        {
+            _moving = false;
+        }
     }
+
+    public override void Activate()
+    {
+        _currentTarget = _newPosition;
+        _moving = true;
+    }
+
+    public override void Deactivate()
+    {
+        _currentTarget = _originalPosition;
+        _moving = true;
+    }
+
+
 }
