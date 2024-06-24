@@ -2497,10 +2497,7 @@ MonoBehaviour:
   groundCheck: {fileID: 1778088629}
   groundLayer:
     serializedVersion: 2
-    m_Bits: 192
-  boxLayer:
-    serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 448
   tr: {fileID: 977192672}
   wallCheck: {fileID: 1385177626}
   wallCheck2: {fileID: 2001078423}
@@ -4076,10 +4073,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: PressurePlate (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 6248390029559779073, guid: cb5e2ae680bfca642bc2f03a25b6f307, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 8411093742779721653, guid: cb5e2ae680bfca642bc2f03a25b6f307, type: 3}
       propertyPath: target
       value: 
       objectReference: {fileID: 1208466813548894768}
+    - target: {fileID: 8411093742779721659, guid: cb5e2ae680bfca642bc2f03a25b6f307, type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cb5e2ae680bfca642bc2f03a25b6f307, type: 3}
 --- !u!4 &2033814623 stripped
@@ -5393,10 +5398,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: PressurePlate
       objectReference: {fileID: 0}
+    - target: {fileID: 6248390029559779073, guid: cb5e2ae680bfca642bc2f03a25b6f307, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 8411093742779721653, guid: cb5e2ae680bfca642bc2f03a25b6f307, type: 3}
       propertyPath: target
       value: 
       objectReference: {fileID: 1208466813548894768}
+    - target: {fileID: 8411093742779721659, guid: cb5e2ae680bfca642bc2f03a25b6f307, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cb5e2ae680bfca642bc2f03a25b6f307, type: 3}
 --- !u!1001 &8485906370678999285
