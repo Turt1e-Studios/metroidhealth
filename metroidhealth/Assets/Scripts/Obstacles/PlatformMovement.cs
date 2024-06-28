@@ -8,6 +8,7 @@ public class PlatformMovement : MonoBehaviour
     
     [SerializeField] private Transform[] positions;
     [SerializeField] private float speed;
+    [SerializeField] private bool onlyXPosition;
 
     private List<Vector2> _originalPositions;
     private Vector2 _velocity;
@@ -32,7 +33,7 @@ public class PlatformMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if ((Vector2) transform.position == _originalPositions[_currentPos])
+        if ((onlyXPosition && transform.position.x == _originalPositions[_currentPos].x) || (Vector2) transform.position == _originalPositions[_currentPos])
         {
             _currentPos = (_currentPos + 1) % positions.Length;
         }

@@ -43,6 +43,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private TrailRenderer superTrail;
     [SerializeField] private SpriteRenderer spriteRenderer;
 
+    public bool IsDead { get; set; }
 
     private float _horizontal;
     private bool _isFacingRight = true;
@@ -72,21 +73,16 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 _newVelocity;
     private Rigidbody2D _rigidbody2D;
     private Vector3 _velocity = Vector3.zero;
-    private bool _isDead = false;
-    private Color _originalColor;
-    private Vector2 _respawnPosition;
-    
+
     private void Start()
     {
         _originalGravity = rb.gravityScale;
         _rigidbody2D = GetComponent<Rigidbody2D>();
-        _originalColor = spriteRenderer.color;
-        _respawnPosition = transform.position;
     }
 
     void Update()
     {
-        if (!_isDead)
+        if (!IsDead)
         {
             // keep track of player's movement while dashing
             if ((IsDoubleWalled() && _isSuperDashing && _hasLeftWall) || (IsGrounded() && _isDownDashing))
@@ -200,7 +196,7 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        if (!_isDead)
+        if (!IsDead)
         {
             // Move the character by finding the target velocity
             Vector3 targetVelocity = new Vector2(_currentSpeed * _horizontal, _rigidbody2D.velocity.y);
@@ -245,12 +241,6 @@ public class PlayerMovement : MonoBehaviour
             }
             
         }
-
-        // check collision with spike/obstacle
-        if (col.gameObject.CompareTag("Obstacle") && !_isDead)
-        {   
-            StartCoroutine(DeathAndRespawn());
-        }
     }
 
     private void OnCollisionExit2D(Collision2D other)
@@ -259,28 +249,6 @@ public class PlayerMovement : MonoBehaviour
         {
             transform.SetParent(null);   
         }
-    }
-
-    private IEnumerator DeathAndRespawn()
-    {
-        _isDead = true;
-        // reset game states
-        
-        rb.velocity = Vector2.zero;
-        
-        // death animation
-
-
-        for (int i = 0; i < 5; i++)
-        {
-            spriteRenderer.color = new Color(_originalColor.r, _originalColor.g, _originalColor.b, 0);
-            yield return new WaitForSeconds(0.125f);
-            spriteRenderer.color = _originalColor;
-            yield return new WaitForSeconds(0.125f);
-        }
-
-        transform.position = _respawnPosition;
-        _isDead = false;
     }
 
     private bool OnTop(Collider2D bottomCollision)
