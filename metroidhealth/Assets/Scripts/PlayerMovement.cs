@@ -395,7 +395,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void WallSlide()
     {
-        if (IsWalled() && !IsGrounded() && _horizontal != 0f)
+        if (IsWalled() && !IsGrounded() && _horizontal != 0f && !_isJumping)
         {
             _isWallSliding = true;
             rb.velocity = new Vector2(rb.velocity.x, -wallSlidingSpeed);
