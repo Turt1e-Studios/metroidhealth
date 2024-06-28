@@ -20,6 +20,11 @@ public class PlayerHealth : MonoBehaviour
         _rigidbody2D = GetComponent<Rigidbody2D>();
     }
 
+    public void Die()
+    {
+        StartCoroutine(DeathAndRespawn());
+    }
+
     private IEnumerator DeathAndRespawn()
     {
         _playerMovement.IsDead = true;
@@ -46,8 +51,8 @@ public class PlayerHealth : MonoBehaviour
     {
         // check collision with spike/obstacle
         if (col.gameObject.CompareTag("Obstacle") && !_playerMovement.IsDead)
-        {   
-            StartCoroutine(DeathAndRespawn());
+        {
+            Die();
         }
     }
 }
