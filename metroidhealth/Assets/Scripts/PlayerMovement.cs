@@ -255,7 +255,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("MovingPlatform") || (other.gameObject.CompareTag("Box") && other.gameObject.GetComponent<BoxMovement>().getParentMovingPlatform() != null))
+        if (other.gameObject.CompareTag("MovingPlatform") || (other.gameObject.CompareTag("Box") && other.gameObject.GetComponent<BoxMovement>().getParentMovingPlatform() != null && OnTop(other.collider)))
         {
             transform.SetParent(null);   
         }
@@ -395,7 +395,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void WallSlide()
     {
-        if (IsWalled() && !IsGrounded() && _horizontal != 0f)
+        if (IsWalled() && !IsGrounded() && _horizontal != 0f && !_isJumping)
         {
             _isWallSliding = true;
             rb.velocity = new Vector2(rb.velocity.x, -wallSlidingSpeed);
