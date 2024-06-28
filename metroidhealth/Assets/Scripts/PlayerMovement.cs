@@ -255,7 +255,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionExit2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("MovingPlatform") || (other.gameObject.CompareTag("Box") && other.gameObject.GetComponent<BoxMovement>().getParentMovingPlatform() != null))
+        if (other.gameObject.CompareTag("MovingPlatform") || (other.gameObject.CompareTag("Box") && other.gameObject.GetComponent<BoxMovement>().getParentMovingPlatform() != null && OnTop(other.collider)))
         {
             transform.SetParent(null);   
         }
