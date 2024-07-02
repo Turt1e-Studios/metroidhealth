@@ -9,6 +9,8 @@ TagManager:
   - MovingPlatform
   - Obstacle
   - Box
+  - Object
+  - NPC
   layers:
   - Default
   - TransparentFX
