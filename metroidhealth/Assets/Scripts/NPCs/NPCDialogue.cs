@@ -1,12 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class NPCDialogue : MonoBehaviour
 {
     // Start is called before the first frame update
     [SerializeField] private string[] text;
     [SerializeField] private float bufferSpeed;
+    [SerializeField] private GameObject visualCue;
+    [SerializeField] private GameObject dialoguePanel;
+    [SerializeField] private TextMeshProUGUI dialogueText;
+    
     private int _dialogueIndex = -1;
     private int _dialogueTextIndex = 1;
 
@@ -23,7 +28,7 @@ public class NPCDialogue : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && _NPCInRange)
+        if (Input.GetKeyDown(KeyCode.Space) && _NPCInRange) // input handling
         {
             _spaceKeyPressed = true;
         }
@@ -33,14 +38,16 @@ public class NPCDialogue : MonoBehaviour
     {
         if (_NPCInRange)
         {
+            visualCue.SetActive(true);
             if (_spaceKeyPressed) 
             {
+                dialoguePanel.SetActive(true);
 
                 if (_bufferingText) 
                 {
-                    // stop buffering, show the whole line
+                    // space key pressed when buffering -> stop buffering, show the whole line
                     _bufferingText = false;
-                    print(text[_dialogueIndex]);
+                    dialogueText.text = text[_dialogueIndex];
                     _dialogueTextIndex = 1;
                     _canBufferNextLetter = true;
                 }
@@ -50,12 +57,15 @@ public class NPCDialogue : MonoBehaviour
                     _dialogueIndex += 1;
                     if (_dialogueIndex >= text.Length)
                     {
-                        // cancel dialogue
+                        // cancel dialogue (done with all text lines)
                         _dialogueIndex = -1;
+                        dialoguePanel.SetActive(false);
+                        dialogueText.text = "";
+                        visualCue.GetComponent<SpriteRenderer>().color = new Color(255,255,255,255);
                     }
                     else
                     {
-                        // start buffering current line
+                        // start buffering line
                         _bufferingText = true;
                     }
                     
@@ -63,29 +73,25 @@ public class NPCDialogue : MonoBehaviour
 
                 _spaceKeyPressed = false;
             }
-            else
+
+            if (_bufferingText && _canBufferNextLetter)
             {
-                if (_bufferingText && _canBufferNextLetter)
-                {
-                    StartCoroutine(BufferLine());
-                }
+                StartCoroutine(BufferLine());
             }
+            
         }
+        
         else
         {
             // player left NPC range
-            _dialogueIndex = -1;
-            _dialogueTextIndex = 1;
-            _spaceKeyPressed = false;
-            _bufferingText = false;
-            _canBufferNextLetter = true;
+            visualCue.SetActive(false);
         }
     }
 
     private IEnumerator BufferLine()
     {
         _canBufferNextLetter = false;
-        print(text[_dialogueIndex].Substring(0, _dialogueTextIndex));
+        dialogueText.text = text[_dialogueIndex].Substring(0, _dialogueTextIndex);
         _dialogueTextIndex += 1;
         if (_dialogueTextIndex > text[_dialogueIndex].Length)
         {

@@ -42,6 +42,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask wallLayer;
     [SerializeField] private TrailRenderer superTrail;
     [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private GameObject dialoguePanel;
+
 
     public bool IsDead { get; set; }
 
@@ -82,7 +84,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (!IsDead)
+        if (!IsDead && !dialoguePanel.activeSelf) // disable all inputs upon death / is interacting with NPC
         {
             // keep track of player's movement while dashing
             if ((IsDoubleWalled() && _isSuperDashing && _hasLeftWall) || (IsGrounded() && _isDownDashing))
