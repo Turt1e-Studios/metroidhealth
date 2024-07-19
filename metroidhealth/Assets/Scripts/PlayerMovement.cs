@@ -326,7 +326,8 @@ public class PlayerMovement : MonoBehaviour
         _isDashing = true;
         float originalGravity = rb.gravityScale;
         rb.gravityScale = 0f;
-        rb.velocity = new Vector2(transform.localScale.x * dashingPower, 0f);
+        //rb.velocity = new Vector2(transform.localScale.x * dashingPower, 0f);
+        rb.velocity = new Vector2(Input.GetAxisRaw("Horizontal") * dashingPower, Input.GetAxisRaw("Vertical") * dashingPower);
         tr.emitting = true;
         yield return new WaitForSeconds(dashingTime);
         tr.emitting = false;
