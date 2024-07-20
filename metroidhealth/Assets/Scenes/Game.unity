@@ -2757,7 +2757,7 @@ MonoBehaviour:
   speed: 16
   airSpeed: 16
   jumpingPower: 33
-  dashingPower: 24
+  dashingPower: 30
   dashingTime: 0.1
   dashingCooldown: 0.25
   wallSlidingSpeed: 9.8

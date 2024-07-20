@@ -158,7 +158,7 @@ public class PlayerMovement : MonoBehaviour
                 {
                     StartCoroutine(SuperDash());
                 }
-                else if (_canDash && canDash)
+                else if (_canDash && canDash && (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0))
                 {
                     StartCoroutine(Dash());
                 }
