@@ -42,9 +42,10 @@ public class GrabObjects : MonoBehaviour
         RaycastHit2D hitInfo = Physics2D.Raycast(rayPoint.position, direction, rayDistance);
         //print(hitInfo.collider);
         //print(hitInfo.collider.gameObject.layer);
-        if (hitInfo.collider != null && hitInfo.collider.gameObject.layer == _layerIndex)
+        
+        if (_spaceKeyPressed) 
         {
-            if (_spaceKeyPressed) 
+            if (hitInfo.collider != null && hitInfo.collider.gameObject.layer == _layerIndex)
             {
                 // grab object
                 if (_grabbedObject == null)
@@ -61,23 +62,24 @@ public class GrabObjects : MonoBehaviour
                     _grabbedObject.transform.SetParent(null);
                     _grabbedObject = null;
                 }
-                _spaceKeyPressed = false;
-            } else if (_JKeyPressed)
-            {
-                if (_grabbedObject != null)
-                {
-                    // throw with velocity
-                    _grabbedObject.GetComponent<Rigidbody2D>().isKinematic = false;
-                    _grabbedObject.transform.SetParent(null);
-                    _grabbedObject.GetComponent<Rigidbody2D>().AddForce(direction * throwForce, ForceMode2D.Impulse);
-                    _grabbedObject = null;
-                     
-                }
-                
-                _JKeyPressed = false;
             }
-
+            _spaceKeyPressed = false;
+        } else if (_JKeyPressed)
+        {
+            if (_grabbedObject != null)
+            {
+                // throw with velocity
+                _grabbedObject.GetComponent<Rigidbody2D>().isKinematic = false;
+                _grabbedObject.transform.SetParent(null);
+                _grabbedObject.GetComponent<Rigidbody2D>().AddForce(direction * throwForce, ForceMode2D.Impulse);
+                _grabbedObject = null;
+                    
+            }
+            
+            _JKeyPressed = false;
         }
+
+        
 
         
         //Debug.DrawRay(rayPoint.position, direction * rayDistance);
