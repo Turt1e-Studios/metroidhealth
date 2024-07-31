@@ -464,4 +464,8 @@ public class PlayerMovement : MonoBehaviour
         canDownDash = value;
     }    
     
+    public bool IsAnyDash()
+    {
+        return _isDashing || _isDownDashing || _isSuperDashing;
+    }
 }
