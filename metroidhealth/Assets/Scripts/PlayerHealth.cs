@@ -55,4 +55,9 @@ public class PlayerHealth : MonoBehaviour
             Die();
         }
     }
+
+    public void SetRespawnPosition(Vector2 position)
+    {
+        _respawnPosition = position;
+    }
 }
